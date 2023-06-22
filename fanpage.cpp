@@ -1,9 +1,9 @@
 #include <iostream>
 using namespace std;
 
-#include "friend.h"
+#include "fanPage.h"
 
-Friend::Friend(const char* theName) : dateOfCreation(Date::getCurrentDate())
+FanPage::FanPage(const char* theName) : dateOfCreation(Date::getCurrentDate())
 {
 	name = new char[strlen(theName) + 1];
 	strcpy(name, theName);
@@ -15,7 +15,7 @@ Friend::Friend(const char* theName) : dateOfCreation(Date::getCurrentDate())
 	listOfStatus = new Status * [maxStatuses];
 }
 
-Friend::Friend(const Friend& other) : dateOfCreation(other.dateOfCreation)
+FanPage::FanPage(const FanPage& other) : dateOfCreation(other.dateOfCreation)
 {
 	name = new char[strlen(other.name) + 1];
 	strcpy(name, other.name);
@@ -31,7 +31,7 @@ Friend::Friend(const Friend& other) : dateOfCreation(other.dateOfCreation)
 	}
 }
 
-Friend::~Friend()
+FanPage::~FanPage()
 {
 	delete[]name;
 
@@ -40,26 +40,35 @@ Friend::~Friend()
 	delete[]listOfStatus;
 }
 
-void Friend::print() const
+char* FanPage::getName() const
 {
-	cout << "the friend '" << name << "' was created at ";
+	return name;
+}
+
+void FanPage::print()
+{
+	cout << "the fanPage '" << name << "' was created at ";
 	dateOfCreation.print();
 	cout << endl;
 }
 
-void Friend::uploadStatus(const Status& theStatus)
+void FanPage::uploadStatus(Status& theStatus)
 {
+	if (this == nullptr)
+	{
+		cout << "\nerror. status not uploaded\n";
+		return;
+	}
 	if (numOfstatus == maxStatuses)
 	{
 		allocateNewArray();
 	}
-	
-	listOfStatus[numOfstatus++] = new Status(theStatus);
+	listOfStatus[numOfstatus++] = new Status(theStatus.getContent());
 }
 
-void Friend::allocateNewArray()
+void FanPage::allocateNewArray()
 {
-	maxStatuses *= 2;
+	maxStatuses*=2;
 	Status** newArray = new Status * [maxStatuses];
 
 	for (int i = 0; i < numOfstatus; i++)
@@ -67,19 +76,20 @@ void Friend::allocateNewArray()
 		newArray[i] = listOfStatus[i];
 	}
 	delete[]listOfStatus;
-	listOfStatus = newArray;
+
+	listOfStatus = newArray;	
+
 }
 
-void Friend::showAllStatus() const
+void FanPage::showAllStatus()
 {
 	if (numOfstatus == 0)
 	{
-		cout << "\nthe friend '" << name << "' has no status\n";
+		cout << "\n" << "the fanPage '" << name << "' has no status\n";
 	}
 	else
 	{
-
-		cout << "\nstatuses of friend '" << name << "':\n";
+		cout << "\nstatuses of fanPage '" << name << "':\n";
 		for (int i = 0; i < numOfstatus; i++)
 		{
 			cout << "\nstatus #" << i + 1<<endl;
@@ -87,20 +97,4 @@ void Friend::showAllStatus() const
 			cout << endl;
 		}
 	}
-}
-
-void Friend::printStatus(int index) const
-{
-	if (index > numOfstatus) return;
-	listOfStatus[index]->print();
-}
-
-const char* Friend::getName() const
-{
-	return name;
-}
-
-int Friend::getNumOfStatus() const
-{
-	return numOfstatus;
 }
